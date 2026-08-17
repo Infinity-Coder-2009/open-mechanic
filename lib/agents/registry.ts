@@ -123,4 +123,4 @@ export async function runOrchestration(designId: string, prompt: string, constra
   return { spec: context.spec, agentOutputs: context.previousOutputs };
 }
 
-export { BaseAgent, AgentContext, AgentRunResult };
+export type { BaseAgent, AgentContext, AgentRunResult };

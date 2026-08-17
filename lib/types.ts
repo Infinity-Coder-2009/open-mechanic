@@ -56,6 +56,7 @@ export const ProjectSpecSchema = z.object({
       confidence: z.number(),
     })
   ).optional(),
+  warnings: z.array(z.string()).optional(),
 });
 
 export type ProjectSpec = z.infer<typeof ProjectSpecSchema>;

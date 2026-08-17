@@ -157,20 +157,21 @@ export class OrchestratorAgent extends BaseAgent {
   }
 
   private mergeAgentOutput(spec: ProjectSpec, agentType: AgentType, output: AgentOutput): ProjectSpec {
-    const agentSpec = output.spec as Record<string, unknown>;
-    
-    // Update sub-assemblies with agent-specific data
-    if (spec.subAssemblies && agentSpec.subAssemblies) {
-      const agentSubAssemblies = agentSpec.subAssemblies as Array<Record<string, unknown>>;
+      const agentSpec = output.spec as Record<string, unknown>;
+      const agentKey = agentType.toLowerCase() as keyof typeof spec.subAssemblies[0];
       
-      spec.subAssemblies = spec.subAssemblies.map((sa, index) => {
-        const agentSA = agentSubAssemblies[index] || {};
-        return {
-          ...sa,
-          [agentType.toLowerCase()]: agentSA[agentType.toLowerCase()] || sa[agentType.toLowerCase()],
-        };
-      });
-    }
+      // Update sub-assemblies with agent-specific data
+      if (spec.subAssemblies && agentSpec.subAssemblies) {
+        const agentSubAssemblies = agentSpec.subAssemblies as Array<Record<string, unknown>>;
+        
+        spec.subAssemblies = spec.subAssemblies.map((sa, index) => {
+          const agentSA = agentSubAssemblies[index] || {};
+          return {
+            ...sa,
+            [agentKey]: agentSA[agentKey] || sa[agentKey],
+          };
+        });
+      }
 
     // Add agent contribution for traceability
     if (!spec.agentContributions) spec.agentContributions = {};

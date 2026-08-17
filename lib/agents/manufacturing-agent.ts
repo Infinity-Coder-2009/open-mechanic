@@ -31,10 +31,10 @@ export class ManufacturingAgent extends BaseAgent {
       });
 
       await this.emitAgentComplete(context.designId, output);
-      await this.log(context.designId, `Manufacturing analysis complete in ${duration}ms`, "info", {
-        processes: output.spec.processes?.length,
-        estimatedLeadTime: output.spec.leadTime,
-      });
+            await this.log(context.designId, `Manufacturing analysis complete in ${duration}ms`, "info", {
+              processes: (output.spec as any).processes?.length,
+              estimatedLeadTime: (output.spec as any).leadTime,
+            });
 
       return { output, duration };
     } catch (error) {

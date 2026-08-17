@@ -33,9 +33,9 @@ export class MechanicalAgent extends BaseAgent {
       });
 
       await this.emitAgentComplete(context.designId, output);
-      await this.log(context.designId, `Mechanical analysis complete in ${duration}ms`, "info", { 
-        subAssemblies: output.spec.subAssemblies?.length 
-      });
+            await this.log(context.designId, `Mechanical analysis complete in ${duration}ms`, "info", {
+              subAssemblies: (output.spec as any).subAssemblies?.length
+            });
 
       return { output, duration };
     } catch (error) {
@@ -73,17 +73,17 @@ Selected manufacturing processes based on budget ($${budget}) and volume require
 Applied safety factors per industry standards.`;
     
     return {
-      agent: "MECHANICAL",
-      status: "complete",
-      spec: {
-        subAssemblies: subAssemblies.map(sa => ({
-          ...sa,
-          mechanical: sa.mechanical,
-        })),
-        totalWeight: subAssemblies.reduce((sum, sa) => sum + (sa.mechanical?.weight || 0), 0),
-        materials: [...new Set(subAssemblies.map(sa => sa.mechanical?.material).filter(Boolean))],
-        processes: [...new Set(subAssemblies.map(sa => sa.mechanical?.process).filter(Boolean))],
-      },
+          agent: "MECHANICAL",
+          status: "complete",
+          spec: {
+            subAssemblies: subAssemblies.map(sa => ({
+              ...sa,
+              mechanical: sa.mechanical,
+            })),
+            totalWeight: subAssemblies.reduce((sum, sa) => sum + (sa.mechanical?.weight || 0), 0),
+            materials: Array.from(new Set(subAssemblies.map(sa => sa.mechanical?.material).filter(Boolean))) as string[],
+            processes: Array.from(new Set(subAssemblies.map(sa => sa.mechanical?.process).filter(Boolean))) as string[],
+          },
       reasoning,
       confidence: 0.85,
       warnings: this.generateWarnings(subAssemblies, targetWeight, budget),

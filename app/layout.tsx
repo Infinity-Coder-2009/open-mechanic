@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -81,15 +80,14 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background text-foreground">
         <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster position="top-right" toastOptions={{ className: "glass-card" }} />
-          <Sonner position="top-right" toastOptions={{ className: "glass-card" }} />
-        </ThemeProvider>
+                  attribute="class"
+                  defaultTheme="dark"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  {children}
+                  <Sonner position="top-right" toastOptions={{ className: "glass-card" }} />
+                </ThemeProvider>
       </body>
     </html>
   );

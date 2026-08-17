@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       prisma.design.count({ where }),
     ]);
 
-    const formatted = designs.map(d => ({
+    const formatted = designs.map((d: any) => ({
       id: d.id,
       prompt: d.prompt,
       status: d.status,

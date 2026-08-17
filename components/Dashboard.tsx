@@ -208,7 +208,7 @@ export function Dashboard() {
           </div>
           
           <div className="flex items-center gap-4">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="hidden md:flex">
+            <Tabs value={activeTab} onValueChange={(value: "design" | "history") => setActiveTab(value as "design" | "history")} className="hidden md:flex">
               <TabsList className="bg-secondary p-1 rounded-lg">
                 <TabsTrigger value="design" className="px-4 py-2">Design</TabsTrigger>
                 <TabsTrigger value="history" className="px-4 py-2">History</TabsTrigger>

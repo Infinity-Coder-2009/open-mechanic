@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/queue";
-import { callAgent, AgentOutput, AgentType, Constraints, ProjectSpec, SYSTEM_PROMPTS } from "@/lib/nim";
-import { getAgentColor, getAgentIcon } from "@/lib/types";
+import { callAgent, AgentOutput, Constraints, ProjectSpec, SYSTEM_PROMPTS } from "@/lib/nim";
+import { AgentType, getAgentColor, getAgentIcon } from "@/lib/types";
 
 export interface AgentContext {
   designId: string;

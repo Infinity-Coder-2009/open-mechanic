@@ -1,14 +1,15 @@
 "use client";
 
 import { Card, CardContent } from "./ui/card";
-import { cn, getAgentIcon, getAgentColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { getAgentIcon, getAgentColor, AgentType } from "@/lib/types";
 
 interface AgentStatusPanelProps {
   agentStatuses: Record<string, any>;
   isGenerating: boolean;
 }
 
-const AGENT_ORDER = ["ORCHESTRATOR", "MECHANICAL", "ELECTRICAL", "THERMAL", "MANUFACTURING", "COST"];
+const AGENT_ORDER: AgentType[] = ["ORCHESTRATOR", "MECHANICAL", "ELECTRICAL", "THERMAL", "MANUFACTURING", "COST"];
 
 const AGENT_INFO: Record<string, { name: string; icon: string; description: string }> = {
   ORCHESTRATOR: { name: "Orchestrator", icon: "cpu", description: "Lead Systems Engineer" },

@@ -1,12 +1,13 @@
 "use client";
 
-import { cn, getAgentColor } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { getAgentColor, AgentType } from "@/lib/types";
 
 interface AgentTimelineProps {
   agentStatuses: Record<string, any>;
 }
 
-const AGENT_ORDER = ["ORCHESTRATOR", "MECHANICAL", "ELECTRICAL", "THERMAL", "MANUFACTURING", "COST"];
+const AGENT_ORDER: AgentType[] = ["ORCHESTRATOR", "MECHANICAL", "ELECTRICAL", "THERMAL", "MANUFACTURING", "COST"];
 
 const AGENT_LABELS: Record<string, string> = {
   ORCHESTRATOR: "Orchestrator",

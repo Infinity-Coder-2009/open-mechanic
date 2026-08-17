@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Separator } from "./ui/separator";
+import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 
 interface ConstraintsPanelProps {
@@ -175,32 +176,33 @@ export function ConstraintsPanel({ disabled, onChange }: ConstraintsPanelProps) 
             <h4 className="text-sm font-medium text-muted-foreground mb-3">Quick Presets</h4>
             <div className="flex flex-wrap gap-2">
               {[
-                { label: "Consumer", height: 300, weight: 2000, budget: 200, env: "indoor", power: "mains" },
-                { label: "Industrial", height: 1000, weight: 15000, budget: 5000, env: "industrial", power: "mains" },
-                { label: "Drone", height: 200, weight: 800, budget: 800, env: "outdoor", power: "battery" },
-                { label: "Space", height: 500, weight: 3000, budget: 50000, env: "space", power: "solar" },
-              ].map((preset) => (
-                <Button
-                  key={preset.label}
-                  type="button"
-                  variant="outline"
-                  className="text-xs py-1.5 px-3 h-auto"
-                  onClick={() => {
-                    const newConstraints = {
-                      maxHeight: preset.height,
-                      maxWeight: preset.weight,
-                      maxBudget: preset.budget,
-                      environment: preset.env as any,
-                      powerSource: preset.power as any,
-                    };
-                    setConstraints(newConstraints);
-                    onChange?.(newConstraints);
-                  }}
-                  disabled={disabled}
-                >
-                  {preset.label}
-                </Button>
-              ))}
+                              { label: "Consumer", height: 300, weight: 2000, budget: 200, env: "indoor", power: "mains" },
+                              { label: "Industrial", height: 1000, weight: 15000, budget: 5000, env: "industrial", power: "mains" },
+                              { label: "Drone", height: 200, weight: 800, budget: 800, env: "outdoor", power: "battery" },
+                              { label: "Space", height: 500, weight: 3000, budget: 50000, env: "space", power: "solar" },
+                            ].map((preset) => (
+                              <Button
+                                key={preset.label}
+                                type="button"
+                                variant="outline"
+                                className="text-xs py-1.5 px-3 h-auto"
+                                onClick={() => {
+                                  const newConstraints = {
+                                    maxHeight: preset.height,
+                                    maxWeight: preset.weight,
+                                    maxBudget: preset.budget,
+                                    environment: preset.env as any,
+                                    powerSource: preset.power as any,
+                                    customConstraints: {},
+                                  };
+                                  setConstraints(newConstraints);
+                                  onChange?.(newConstraints);
+                                }}
+                                disabled={disabled}
+                              >
+                                {preset.label}
+                              </Button>
+                            ))}
             </div>
           </div>
         </CardContent>

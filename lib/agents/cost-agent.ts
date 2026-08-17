@@ -204,18 +204,19 @@ Identified ${reductions.length} cost reduction opportunities.`;
     });
     
     // Packaging
-    items.push({
-      partNumber: `PKG-${pnCounter++}`,
-      description: "Packaging materials",
-      category: "Packaging",
-      qty: 1,
-      unitCost: manufacturingOutput?.packaging?.estimatedCost || 10,
-      totalCost: manufacturingOutput?.packaging?.estimatedCost || 10,
-      supplier: "Uline",
-      supplierPN: "PKG-CUSTOM",
-      leadTime: "1 week",
-      notes: manufacturingOutput?.packaging?.type || "Standard box",
-    });
+        const packaging = manufacturingOutput?.packaging as { estimatedCost?: number; type?: string } | undefined;
+        items.push({
+          partNumber: `PKG-${pnCounter++}`,
+          description: "Packaging materials",
+          category: "Packaging",
+          qty: 1,
+          unitCost: packaging?.estimatedCost || 10,
+          totalCost: packaging?.estimatedCost || 10,
+          supplier: "Uline",
+          supplierPN: "PKG-CUSTOM",
+          leadTime: "1 week",
+          notes: packaging?.type || "Standard box",
+        });
     
     return { items };
   }

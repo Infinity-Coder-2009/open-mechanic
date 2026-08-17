@@ -1,16 +1,14 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { 
-  OrbitControls, 
-  Grid, 
-  AxesHelper, 
+import { Canvas, useFrame, useThree, Group } from "@react-three/fiber";
+import {
+  OrbitControls,
+  Grid,
+  AxesHelper,
   ContactShadows,
   Stage,
   Html,
-  Lines,
-  useLines
 } from "@react-three/drei";
 import * as THREE from "three";
 import { cn } from "@/lib/utils";
@@ -51,9 +49,9 @@ function FanModel({ spec, wireframe, color }: { spec?: any; wireframe?: boolean;
     
     // Motor shaft hole
     const shaftGeo = new THREE.CylinderGeometry(4, 4, 25, 16);
-    const shaft = new THREE.Mesh(shaftGeo, new THREE.MeshBasicMaterial({ 
-      color: 0x333333, 
-      wireframe: true 
+    const shaft = new THREE.Mesh(shaftGeo, new THREE.MeshBasicMaterial({
+      color: 0x333333,
+      wireframe: true
     }));
     shaft.position.y = 12.5;
     group.add(shaft);
@@ -101,7 +99,7 @@ function FanModel({ spec, wireframe, color }: { spec?: any; wireframe?: boolean;
     
   }, [spec, wireframe, color]);
   
-  return <group ref={groupRef} />;
+  return <Group ref={groupRef} />;
 }
 
 // Drone geometry component
@@ -164,7 +162,7 @@ function DroneModel({ wireframe, color }: { wireframe?: boolean; color?: string 
     }
   }, [wireframe, color]);
   
-  return <group ref={groupRef} />;
+  return <Group ref={groupRef} />;
 }
 
 // Robotic arm component
@@ -172,10 +170,10 @@ function RoboticArmModel({ wireframe, color }: { wireframe?: boolean; color?: st
   const groupRef = useRef<THREE.Group>(null);
   const [jointAngles, setJointAngles] = useState([0, -0.5, 1.0, 0, 0.5, 0]);
   
-  useFrame((_, delta) => {
-    // Subtle animation
-    setJointAngles(prev => prev.map((a, i) => a + Math.sin(Date.now() * 0.001 + i) * 0.001));
-  });
+  useFrame((_state: any, delta: number) => {
+      // Subtle animation
+      setJointAngles(prev => prev.map((a, i) => a + Math.sin(Date.now() * 0.001 + i) * 0.001));
+    });
   
   useEffect(() => {
     if (!groupRef.current) return;
@@ -226,7 +224,7 @@ function RoboticArmModel({ wireframe, color }: { wireframe?: boolean; color?: st
     group.add(ee);
   }, [wireframe, color]);
   
-  return <group ref={groupRef} />;
+  return <Group ref={groupRef} />;
 }
 
 // Generic placeholder
@@ -234,9 +232,9 @@ function PlaceholderModel({ wireframe, color }: { wireframe?: boolean; color?: s
   const groupRef = useRef<THREE.Group>(null);
   const [rotation, setRotation] = useState(0);
   
-  useFrame((_, delta) => {
-    setRotation(r => r + delta * 0.2);
-  });
+  useFrame((_state: any, delta: number) => {
+      setRotation(r => r + delta * 0.2);
+    });
   
   useEffect(() => {
     if (!groupRef.current) return;
@@ -268,13 +266,13 @@ function PlaceholderModel({ wireframe, color }: { wireframe?: boolean; color?: s
   }, [wireframe, color]);
   
   return (
-    <group ref={groupRef} rotation-y={rotation}>
-      <group />
-    </group>
+    <Group ref={groupRef} rotation-y={rotation}>
+      <Group />
+    </Group>
   );
 }
 
-function Scene({ spec, wireframe, isGenerating }) {
+function Scene({ spec, wireframe, isGenerating }: { spec?: any; wireframe?: boolean; isGenerating?: boolean }) {
   const modelType = spec?.type?.toLowerCase() || "";
   
   return (
@@ -335,13 +333,13 @@ export function ThreeViewer({ designSpec, isGenerating }: ThreeViewerProps) {
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden bg-black/50">
       <Canvas
-        camera={{ position: cameraPosition, fov: 45 }}
-        onCreated={({ gl }) => {
-          gl.setClearColor(0x0a0f1a, 1);
-          gl.shadowMap.enabled = false;
-        }}
-        style={{ touchAction: "none" }}
-      >
+              camera={{ position: cameraPosition, fov: 45 }}
+              onCreated={({ gl }: { gl: THREE.WebGLRenderer }) => {
+                gl.setClearColor(0x0a0f1a, 1);
+                gl.shadowMap.enabled = false;
+              }}
+              style={{ touchAction: "none" }}
+            >
         <Scene spec={designSpec} wireframe={wireframe} isGenerating={isGenerating} />
         
         <OrbitControls

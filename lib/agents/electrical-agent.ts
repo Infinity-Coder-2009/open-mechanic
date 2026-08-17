@@ -91,7 +91,7 @@ Designed for ${environment} environment with appropriate IP rating.`;
       },
       reasoning,
       confidence: 0.82,
-      warnings: this.generateWarnings(powerBudget, powerSource, budget),
+            warnings: this.generateWarnings(powerBudget, powerSource, this.budget),
       nextAgentHints: [
         "Thermal agent should analyze heat from motor drivers and power electronics",
         "Mechanical agent should accommodate PCB mounting and connector clearance",
