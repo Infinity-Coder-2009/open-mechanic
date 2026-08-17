@@ -1,0 +1,23 @@
+[project]
+name = "openmechanic-cad"
+version = "1.0.0"
+description = "OpenMechanic Python CAD Microservice"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.109.0",
+    "uvicorn[standard]==0.27.0",
+    "pydantic==2.5.3",
+    "python-dotenv==1.0.0",
+    "cadquery==2.5.2",
+    "ocp-tessellate==3.0.6",
+    "numpy==1.26.4",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.uvicorn]
+host = "0.0.0.0"
+port = 8000
+reload = true

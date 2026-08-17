@@ -1,0 +1,98 @@
+// OpenMechanic Database Schema
+// This schema defines the core data models for the AI-powered hardware engineering co-pilot
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DesignStatus {
+  QUEUED
+  PARSING
+  AGENTS_RUNNING
+  CAD_GENERATING
+  SIMULATING
+  APPROVAL_NEEDED
+  COMPLETE
+  FAILED
+}
+
+enum JobType {
+  CAD
+  SIM
+  EVOLVE
+  AGENT_ORCHESTRATION
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AgentType {
+  ORCHESTRATOR
+  MECHANICAL
+  ELECTRICAL
+  THERMAL
+  MANUFACTURING
+  COST
+}
+
+model Design {
+  id            String       @id @default(cuid())
+  prompt        String
+  constraints   Json
+  status        DesignStatus @default(QUEUED)
+  spec          Json?        // Final unified ProjectSpec from orchestrator
+  agentOutputs  Json?        // All agent outputs for traceability
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  jobs          Job[]
+  agentRuns     AgentRun[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Job {
+  id        String    @id @default(cuid())
+  designId  String
+  design    Design    @relation(fields: [designId], references: [id], onDelete: Cascade)
+  type      JobType
+  status    JobStatus @default(PENDING)
+  result    Json?
+  error     Json?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([designId])
+  @@index([status])
+  @@index([type])
+}
+
+model AgentRun {
+  id          String     @id @default(cuid())
+  designId    String
+  design      Design     @relation(fields: [designId], references: [id], onDelete: Cascade)
+  agentType   AgentType
+  status      JobStatus  @default(PENDING)
+  input       Json
+  output      Json?
+  reasoning   String?
+  confidence  Float?
+  warnings    String[]
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+
+  @@index([designId])
+  @@index([agentType])
+  @@index([status])
+}

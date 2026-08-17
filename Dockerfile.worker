@@ -1,0 +1,46 @@
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat python3 py3-pip
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Generate Prisma client
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+# Builder stage
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+# Install tsx for running TypeScript workers
+RUN npm install -g tsx
+
+# Production runner
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/workers ./workers
+COPY --from=builder --chown=nextjs:nodejs /app/lib ./lib
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+
+USER nextjs
+
+# Default command runs orchestration worker
+CMD ["tsx", "workers/orchestration-worker.ts"]

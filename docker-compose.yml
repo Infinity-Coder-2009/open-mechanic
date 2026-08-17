@@ -1,0 +1,110 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: openmechanic-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: openmechanic
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: openmechanic-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  python-cad:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    container_name: openmechanic-python-cad
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHON_CAD_API_KEY=dev_key_change_in_production
+    volumes:
+      - python_output:/app/output
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openmechanic-nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/openmechanic?schema=public
+      - REDIS_URL=redis://redis:6379
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - NVIDIA_NIM_BASE_URL=https://integrate.api.nvidia.com/v1
+      - NVIDIA_NIM_MODEL=meta/llama-3.1-70b-instruct
+      - PYTHON_CAD_URL=http://python-cad:8000
+      - PYTHON_CAD_API_KEY=dev_key_change_in_production
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      python-cad:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: openmechanic-worker
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/openmechanic?schema=public
+      - REDIS_URL=redis://redis:6379
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY}
+      - NVIDIA_NIM_BASE_URL=https://integrate.api.nvidia.com/v1
+      - NVIDIA_NIM_MODEL=meta/llama-3.1-70b-instruct
+      - PYTHON_CAD_URL=http://python-cad:8000
+      - PYTHON_CAD_API_KEY=dev_key_change_in_production
+      - WORKER_CONCURRENCY=2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      python-cad:
+        condition: service_healthy
+    deploy:
+      replicas: 1
+
+volumes:
+  postgres_data:
+  redis_data:
+  python_output:
